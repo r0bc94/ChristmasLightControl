@@ -12,3 +12,5 @@ class Device():
 
     def setName(self, newName: str):
         self.__name = newName
+
+    name = property(getName, setName)
