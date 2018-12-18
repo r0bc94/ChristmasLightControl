@@ -1,12 +1,13 @@
+from .device import Device
 """
 Represents a PowerPlug with all the associated attributes.
 """
 
-class PowerPlug():
+class PowerPlug(Device):
     def __init__(self, codeOnOff, name='', pulselength=0, protocol=0):
+        super().__init__(name)
         self.setOnOffCodes(codeOnOff)
         
-        self.__name = name
         self.__pulselength = pulselength
         self.__protocol = protocol
 
@@ -19,9 +20,6 @@ class PowerPlug():
     def getOnOffCodes(self):
         return self.__codeOn, self.__codeOff
 
-    def getName(self):
-        return self.__name
-    
     def setPulselength(self, newPulselength: int):
         self.__pulselength = newPulselength
 
@@ -35,6 +33,5 @@ class PowerPlug():
         return self.__protocol
 
     codes = property(getOnOffCodes, setOnOffCodes)
-    name = property(getName)
     pulselength = property(getPulselength, setPulselength)
     protocol = property(getProtocol, setProtocol)
