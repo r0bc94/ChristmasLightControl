@@ -32,6 +32,41 @@ class TestConfigParser():
         
         self.__checkResults(parsedConfig, expectedResult)
 
+    def testParseFaultyPPs(self, configParser):
+        print('It should at least parse all GPIODevices, even if the PowerPlugs format is wrong')
+
+        expectedResult = {
+            'PowerPlugs': [],
+            'GPIODevices': [
+                GPIODevice('Switch1', 2)
+            ]
+        }
+
+        parsedConfig = configParser.parseConfigFile(configFilePath='test/config_parser_tests/fixtures/faulty_powerplugs.yaml')
+
+        assert isinstance(parsedConfig, dict)
+        assert len(parsedConfig) == 2
+
+        self.__checkResults(parsedConfig, expectedResult)
+
+    def testParseFaultyGPIODevs(self, configParser):
+        print('It should at least parse all PowerPlugs, even if the GPIODevice format is wrong')
+
+        expectedResult = {
+            'PowerPlugs': [  
+                PowerPlug(
+                    [123, 567], name='PowerPlug1', protocol=0, pulselength=567)
+                ],
+            'GPIODevices': []
+        }
+
+        parsedConfig = configParser.parseConfigFile(configFilePath='test/config_parser_tests/fixtures/faulty_gpiodevices.yaml')
+
+        assert isinstance(parsedConfig, dict)
+        assert len(parsedConfig) == 2
+
+        self.__checkResults(parsedConfig, expectedResult)
+
     def __checkResults(self, actual, expected):
         for currentKey in expected.keys():
             expList = expected[currentKey]
