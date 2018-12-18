@@ -30,11 +30,10 @@ class ConfigParser():
 
         parsedConfiguration = None
         try:
-            parsedConfiguration = yaml.parse(fileContent)
+            parsedConfiguration = yaml.load(fileContent)
         except yaml.ScannerError as err:
             self.__logger.error('Failed to read the config file: {}'.format(err))
             raise
-
         return self.__parseTypes(parsedConfiguration)
 
     def __parseTypes(self, parsedConfigFile):
