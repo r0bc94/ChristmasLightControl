@@ -2,6 +2,7 @@ import yaml
 import logging
 
 from .power_plug import PowerPlug
+from .gpio_device import GPIODevice
 
 """
 This class represents the config parser, which reads the simple 
@@ -60,6 +61,8 @@ class ConfigParser():
                 self.__logger.warning('GPIO Devices where defined but none where loaded. Please recheck your configuration!')
 
             outDict['GPIODevices'] = parsedGpioDevices
+        
+        return outDict
 
     def __parsePowerPlugs(self, powerPlugList):
         """
@@ -68,10 +71,10 @@ class ConfigParser():
         outPlugs = []
         for currentPlug in powerPlugList:
             try:
-                name = currentPlug[name]
-                codes = currentPlug[codes]
-                pulselength = currentPlug[pulselength]
-                protocol = currentPlug[protocol]
+                name = currentPlug['name']
+                codes = currentPlug['codes']
+                pulselength = currentPlug['pulselength']
+                protocol = currentPlug['protocol']
 
                 outPlug = PowerPlug(codes, name=name, pulselength=pulselength, protocol=protocol)
                 outPlugs.append(outPlug)
@@ -89,11 +92,14 @@ class ConfigParser():
         outGpioDevices = []
         for currentDevice in gpioDevicesList:
             try:
-                name = currentDevice[name]
-                pin = currentDevice[pin]
+                name = currentDevice['name']
+                pin = currentDevice['pin']
+
+                outGpioDevice = GPIODevice(name, pin)
+                outGpioDevices.append(outGpioDevice)
             
             except KeyError as kerr:
                 self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
                 continue
-        
+
         return outGpioDevices
