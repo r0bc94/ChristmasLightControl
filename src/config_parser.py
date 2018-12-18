@@ -12,10 +12,11 @@ class ConfigParser():
         self.__logger = logging.getLogger('ConfigParser')
         self.__filePath = configFilePath
 
-    def parseConfigFile(self):
+    def parseConfigFile(self, configFilePath=''):
         """
         Parses the config file and returns a list of python objects.
         """
+        self.__filePath = configFilePath if configFilePath else self.__filePath
         fileContent = ""
         try:
             with open(self.__filePath, 'r') as configFile:
