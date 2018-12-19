@@ -1,6 +1,6 @@
 import coloredlogs
 import logging
-import paho
+import paho.mqtt.client as mqtt
 import argparse
 
 from src.config_parser import ConfigParser
@@ -24,14 +24,36 @@ argParser.add_argument('-c', '--configpath', type=str, default='config.yaml', he
 args = argParser.parse_args()
 
 # Parse the config file
-#configParser = ConfigParser(configFilePath=args.configpath)
-#devDict = {}
-#try:
-#    devDict = configParser.parseConfigFile()
-#except Exception as ex:
+configParser = ConfigParser(configFilePath=args.configpath)
+devDict = {}
+try:
+    devDict = configParser.parseConfigFile()
+except FileNotFoundError:
+    exit(1)
+except Exception as ex:
+    logger.error('Unexpected Error: {}'.format(ex))
+    logger.exception(ex)
+    exit(1)
 
+def on_connect(client, userdata, flags, rc):
+    logger.info('Sucessfully connected to the mqtt broker')
 
-logger.debug('Debug')
-logger.info('Info')
-logger.warning('Warning')
-logger.error('Error')
+    logger.debug('Subscribing to root topic: {}'.format(args.topic))
+    client.subscribe(args.topic)
+
+def on_message(client, userdata, message):
+    logger.debug('Received mqtt messaged from the broker')
+    logger.debug('Topic: {}'.format(message.topic))
+    logger.debug('Content: {}'.format(message.payload))
+
+client = mqtt.Client()
+
+client.on_connect = on_connect
+client.on_message = on_message
+
+logger.info('Connecting to the MQTT Broker...')
+logger.debug('MQTT Broker host: {}:{}'.format(args.host, args.port))
+client.connect(args.host, port=args.port)
+
+logger.info('Waiting for mqtt messages...')
+client.loop_forever()
