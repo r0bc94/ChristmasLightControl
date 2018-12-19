@@ -46,6 +46,9 @@ def on_message(client, userdata, message):
     logger.debug('Topic: {}'.format(message.topic))
     logger.debug('Content: {}'.format(message.payload))
 
+    devName = message.payload.decode().split('/')[-1]
+    dev = devDict[devName]
+
 client = mqtt.Client()
 
 client.on_connect = on_connect
