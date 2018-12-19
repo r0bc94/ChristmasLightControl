@@ -2,6 +2,7 @@ import logging
 from rpi_rf import RFDevice
 
 from .power_plug import PowerPlug
+from .rfdevice_factory import RFDeviceFactory
 
 """
 This service handles the power plugs.
@@ -11,7 +12,7 @@ class PowerPlugHandler():
     def __init__(self, senderGpioPin, sendRepeat=10):
         self.__logger = logging.getLogger('Power Plug Service')
         self.__activatedPowerPlugs = []
-        self.__rfDevice = self.__initializeRfDevice(senderGpioPin, sendRepeat)
+        self.__rfDevice = RFDeviceFactory.createRFDeviceFactory().createRFDevice(senderGpioPin, sendRepeat=sendRepeat)
 
     def turnOn(self, powerplug: PowerPlug):
         codeOn = powerplug.codes[0]
