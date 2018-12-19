@@ -14,3 +14,9 @@ class Device():
         self.__name = newName
 
     name = property(getName, setName)
+
+    def turnOn(self):
+        raise NotImplementedError('The devices subclass has to implement this function')
+
+    def turnOff(self):
+        raise NotImplementedError('The devices subclass has to implement this function')
