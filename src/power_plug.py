@@ -35,6 +35,12 @@ class PowerPlug(Device):
     def getProtocol(self):
         return self.__protocol
 
+    def turnOn(self):
+        self.__handler.turnOn(self)
+
+    def turnOff(self):
+        self.__handler.turnOff(self)
+
     codes = property(getOnOffCodes, setOnOffCodes)
     pulselength = property(getPulselength, setPulselength)
     protocol = property(getProtocol, setProtocol)
