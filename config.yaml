@@ -1,0 +1,7 @@
+PowerPlugs:
+  - name: 'snowman'
+    codes: 
+      - codeOn: 123
+      - codeOff: 456
+    pulselength: 123
+    protocol: 2
