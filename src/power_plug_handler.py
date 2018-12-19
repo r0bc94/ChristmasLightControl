@@ -1,7 +1,6 @@
 import logging
 from rpi_rf import RFDevice
 
-from .power_plug import PowerPlug
 from .rfdevice_factory import RFDeviceFactory
 
 """
@@ -14,11 +13,11 @@ class PowerPlugHandler():
         self.__activatedPowerPlugs = []
         self.__rfDevice = RFDeviceFactory.createRFDeviceFactory().createRFDevice(senderGpioPin, sendRepeat=sendRepeat)
 
-    def turnOn(self, powerplug: PowerPlug):
+    def turnOn(self, powerplug):
         codeOn = powerplug.codes[0]
         self.__sendDeviceCommand(codeOn, powerplug)
 
-    def turnOff(self, powerplug: PowerPlug):
+    def turnOff(self, powerplug):
         codeOff = powerplug.codes[1]
         self.__sendDeviceCommand(codeOff, powerplug)
 
