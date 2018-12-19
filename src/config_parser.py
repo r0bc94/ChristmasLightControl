@@ -1,8 +1,8 @@
 import yaml
 import logging
 
-from .power_plug import PowerPlug
-from .gpio_device import GPIODevice
+from src.power_plug import PowerPlug
+from src.gpio_device import GPIODevice
 
 """
 This class represents the config parser, which reads the simple 
