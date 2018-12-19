@@ -13,7 +13,7 @@ class ConfigParser():
     def __init__(self, configFilePath='./config.yaml'):
         self.__logger = logging.getLogger('ConfigParser')
         coloredlogs.install(level='DEBUG', logger=self.__logger)
-        
+
         self.__filePath = configFilePath
 
     def parseConfigFile(self, configFilePath=''):
@@ -26,7 +26,7 @@ class ConfigParser():
             with open(self.__filePath, 'r') as configFile:
                 fileContent = configFile.read()
         except FileNotFoundError:
-            self.__logger.error('No config file was found in {}'.format(self.__filePath))
+            self.__logger.error('No config file was found for: {}'.format(self.__filePath))
             raise
         except IOError as ioErr:
             self.__logger.exception('Error while trying to open the config file: {}'.format(ioErr))
