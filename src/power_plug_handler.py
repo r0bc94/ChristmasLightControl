@@ -15,18 +15,19 @@ class PowerPlugHandler():
 
     def turnOn(self, powerplug: PowerPlug):
         codeOn = powerplug.codes[0]
+        self.__sendDeviceCommand(codeOn, powerplug)
+
+    def turnOff(self, powerplug: PowerPlug):
+        codeOff = powerplug.codes[1]
+        self.__sendDeviceCommand(codeOff, powerplug)
+
+    def __sendDeviceCommand(self, code, powerplug):
         pluselength = powerplug.pulselength
         protocol = powerplug.protocol
 
         self.__logger.info('Turning Plug {}'.format(powerplug.name))
-        self.__logger.debug('Codes: {}'.format(codeOn))
+        self.__logger.debug('Code: {}'.format(code))
         self.__logger.debug('Pulselenght: {}'.format(pluselength))
         self.__logger.debug('Protocol: {}'.format(protocol))
         
-        self.__rfDevice.tx_code(codeOn, protocol, pluselength)
-
-    def __initializeRfDevice(self, senderGpioPin, sendRepeat):
-        rfDevice = RFDevice(senderGpioPin)
-        rfDevice.enable_tx()
-        rfDevice.tx_repeat = sendRepeat
-        return rfDevice
+        self.__rfDevice.tx_code(code, protocol, pluselength)
