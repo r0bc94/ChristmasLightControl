@@ -1,4 +1,5 @@
 import logging
+import coloredlogs
 from rpi_rf import RFDevice
 
 from .rfdevice_factory import RFDeviceFactory
@@ -10,6 +11,8 @@ This service handles the power plugs.
 class PowerPlugHandler():
     def __init__(self, senderGpioPin, sendRepeat=10):
         self.__logger = logging.getLogger('Power Plug Service')
+        coloredlogs.install(level='DEBUG', logger=self.__logger)
+
         self.__activatedPowerPlugs = []
         self.__rfDevice = RFDeviceFactory.createRFDeviceFactory().createRFDevice(senderGpioPin, sendRepeat=sendRepeat)
 

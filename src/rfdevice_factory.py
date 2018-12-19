@@ -1,4 +1,5 @@
 import logging
+import coloredlogs
 
 from rpi_rf import RFDevice
 """
@@ -24,6 +25,8 @@ class RFDeviceFactory():
             raise Exception('The RFDevice Factory is a singleton. Use createRFDeviceFactory')
 
         self.__logger = logging.getLogger('RFDeviceFactory')
+        coloredlogs.install(level='DEBUG', logger=self.__logger)
+
         self.__logger.debug('RFDeviceFactory singleton created')
 
         RFDeviceFactory.__instance = self

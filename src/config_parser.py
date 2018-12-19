@@ -1,5 +1,6 @@
 import yaml
 import logging
+import coloredlogs
 
 from src.power_plug import PowerPlug
 from src.gpio_device import GPIODevice
@@ -11,6 +12,8 @@ yaml file and converts the object into python objects.
 class ConfigParser():
     def __init__(self, configFilePath='./config.yaml'):
         self.__logger = logging.getLogger('ConfigParser')
+        coloredlogs.install(level='DEBUG', logger=self.__logger)
+        
         self.__filePath = configFilePath
 
     def parseConfigFile(self, configFilePath=''):
