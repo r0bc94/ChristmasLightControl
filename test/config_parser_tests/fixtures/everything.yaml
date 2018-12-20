@@ -1,11 +1,11 @@
-PowerPlugs:
-  - name: "PowerPlug1"
-    codes:
-      - 123
-      - 567
-    pulselength: 567
-    protocol: 0
+PowerPlug1:
+  type: 'PowerPlug'
+  codes:
+    - 123
+    - 456
+  pulselength: 234
+  protocol: 1
 
-GPIODevices:
-  - name: "Switch1"
-    pin: 2
+GPIODevice1:
+  type: 'GPIODevice'
+  pin: 2
