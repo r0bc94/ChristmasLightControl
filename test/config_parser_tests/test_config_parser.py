@@ -109,6 +109,6 @@ class TestConfigParser():
                 assert actDev.pin == expDev.pin
             
             else:
-                assert False, 'Type {} should not be valid.'.format(actDev.type)
+                assert False, 'Type {} should not be valid.'.format(type(actDev))
             
 
