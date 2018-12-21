@@ -35,6 +35,7 @@ class ConfigParser():
         parsedConfiguration = None
         try:
             parsedConfiguration = yaml.load(fileContent)
+            print(parsedConfiguration)
         except yaml.ScannerError as err:
             self.__logger.error('Failed to read the config file: {}'.format(err))
             raise
@@ -42,67 +43,66 @@ class ConfigParser():
 
     def __parseTypes(self, parsedConfigFile):
         """
-        Looks up all specified device types in the parsed config file and calls the
-        correct parsing method
+        Iterates over all parsed keys and parses the devices.
+        Returns a dict which associates every key with the parsed python object.
         """
         outDict = {}
-        if 'PowerPlugs' in parsedConfigFile:
-            powerPlugsRaw = parsedConfigFile['PowerPlugs']
-            parsedPowerPlugs = self.__parsePowerPlugs(powerPlugsRaw)
 
-            if len(parsedPowerPlugs) == 0:
-                self.__logger.warning('Power Plugs where defined but none where loaded. Please recheck your configuration!')
+        for curDevName, curDev in parsedConfigFile.items():
+            try:
+                devType = curDev['type']
 
-            outDict['PowerPlugs'] = parsedPowerPlugs
-            
+                if devType == 'PowerPlug':
+                    parsedPlug = self.__parsePowerPlug(curDev, curDevName)
 
-        if 'GPIODevices' in parsedConfigFile:
-            gpioDevicesRaw = parsedConfigFile['GPIODevices']
-            parsedGpioDevices = self.__parseGpioDevices(gpioDevicesRaw)
+                    if parsedPlug is not None:
+                        outDict[curDevName] = parsedPlug
+                
+                elif devType == 'GPIODevice':
+                    parsedGpioDev = self.__parseGpioDevice(curDev, curDevName)
 
-            if len(parsedGpioDevices) == 0:
-                self.__logger.warning('GPIO Devices where defined but none where loaded. Please recheck your configuration!')
+                    if parsedGpioDev is not None:
+                        outDict[curDevName] = parsedGpioDev
+                
+                else:
+                    self.__logger.error('Unknown device type: {}, ignoring...'.format(curDevName))
 
-            outDict['GPIODevices'] = parsedGpioDevices
-        
+            except KeyError:
+                self.__logger.error('No Type for device {} given! Ignoring...'.format(curDevName))
+
+        if len(outDict) == 0:
+            self.__logger.warning('No devices where loaded! Please recheck your configuration.')
+
         return outDict
 
-    def __parsePowerPlugs(self, powerPlugList):
+    def __parsePowerPlug(self, powerPlugRaw, devName):
         """
-        Creates a list of gpio device python objects from the passed raw object model.
+        Returns the PowerPlug object parsed from the passed object model.
         """
-        outPlugs = []
-        for currentPlug in powerPlugList:
-            try:
-                name = currentPlug['name']
-                codes = currentPlug['codes']
-                pulselength = currentPlug['pulselength']
-                protocol = currentPlug['protocol']
+        outPlug = None
+        try:
+            codes = powerPlugRaw['codes']
+            pulselength = powerPlugRaw['pulselength']
+            protocol = powerPlugRaw['protocol']
 
-                outPlug = PowerPlug(codes, name=name, pulselength=pulselength, protocol=protocol)
-                outPlugs.append(outPlug)
-            
-            except KeyError as kerr:
-                self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
-                continue
+            outPlug = PowerPlug(codes, name=devName, pulselength=pulselength, protocol=protocol)
         
-        return outPlugs
+        except KeyError as kerr:
+            self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
+    
+        return outPlug
 
-    def __parseGpioDevices(self, gpioDevicesList):
+    def __parseGpioDevice(self, gpioDeviceRaw, devName):
         """
-        Creates a list of gpio device python objects from the passed raw object model.
+        Returns the GPIO object parsed from the passed object model.
         """
-        outGpioDevices = []
-        for currentDevice in gpioDevicesList:
-            try:
-                name = currentDevice['name']
-                pin = currentDevice['pin']
+        outGpioDevice = None
+        try:
+            pin = gpioDeviceRaw['pin']
 
-                outGpioDevice = GPIODevice(name, pin)
-                outGpioDevices.append(outGpioDevice)
-            
-            except KeyError as kerr:
-                self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
-                continue
+            outGpioDevice = GPIODevice(devName, pin)
+        
+        except KeyError as kerr:
+            self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
 
-        return outGpioDevices
+        return outGpioDevice
