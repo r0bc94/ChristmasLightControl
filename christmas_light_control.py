@@ -3,6 +3,8 @@ import logging
 import paho.mqtt.client as mqtt
 import argparse
 
+import RPi.GPIO as GPIO
+
 from src.config_parser import ConfigParser
 
 # Create a logger instance
@@ -11,7 +13,6 @@ logger = logging.getLogger('MainApplication')
 # Create a logging instance
 coloredlogs.DEFAULT_LOG_FORMAT = '[%(asctime)s] %(name)s %(levelname)s %(message)s'
 coloredlogs.install(level='DEBUG', logger=logger)
-
 
 # Register the command line arguments.
 argParser = argparse.ArgumentParser(description='Simple application that listens to mqtt messages from a defined broker and toggles defined devices.')
@@ -38,16 +39,29 @@ except Exception as ex:
 def on_connect(client, userdata, flags, rc):
     logger.info('Sucessfully connected to the mqtt broker')
 
-    logger.debug('Subscribing to root topic: {}'.format(args.topic))
-    client.subscribe(args.topic)
+    logger.debug('Subscribing to root topic: {}'.format(args.topic + '#'))
+    client.subscribe(args.topic + '#')
 
 def on_message(client, userdata, message):
     logger.debug('Received mqtt messaged from the broker')
     logger.debug('Topic: {}'.format(message.topic))
     logger.debug('Content: {}'.format(message.payload))
 
-    devName = message.payload.decode().split('/')[-1]
-    dev = devDict[devName]
+    devName = message.topic.split('/')[-1]
+    
+    if devName not in devDict:
+        logger.warning('Device with name {} not registered.'.format(devName))
+        return
+
+    devToToggle = devDict[devName]
+
+    messagePayload = message.payload.decode('utf-8', errors='ignore')
+    if messagePayload.upper() == 'ON':
+        devToToggle.turnOn()
+    elif messagePayload.upper() == 'OFF':
+        devToToggle.turnOff()
+    else:
+        logger.warning('Invalid message content: {}'.format(messagePayload))
 
 client = mqtt.Client()
 
@@ -58,5 +72,16 @@ logger.info('Connecting to the MQTT Broker...')
 logger.debug('MQTT Broker host: {}:{}'.format(args.host, args.port))
 client.connect(args.host, port=args.port)
 
-logger.info('Waiting for mqtt messages...')
-client.loop_forever()
+try:
+    logger.info('Waiting for mqtt messages...')
+    client.loop_forever()
+except KeyboardInterrupt:
+    logger.info('exiting...')
+except Exception as ex:
+    logger.error('An unexpected error occured: {}'.format(ex))
+    logger.exception(ex)
+finally:
+    logger.debug('Cleaning up GPIO Channels')
+    
+    # TODO: I need some sort of cleanup function in the device classes.
+    GPIO.cleanup()
