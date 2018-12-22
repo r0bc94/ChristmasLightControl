@@ -5,7 +5,7 @@ Represents a PowerPlug with all the associated attributes.
 """
 
 class PowerPlug(Device):
-    def __init__(self, codeOnOff, name='', pulselength=0, protocol=0, senderGpioPin=11, sendRepeat=10):
+    def __init__(self, codeOnOff, name='', pulselength=0, protocol=0, senderGpioPin=17, sendRepeat=10):
         super().__init__(name)
         self.setOnOffCodes(codeOnOff)
         
