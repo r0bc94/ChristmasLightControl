@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import coloredlogs
 import logging
 import paho.mqtt.client as mqtt
