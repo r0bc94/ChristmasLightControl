@@ -1,7 +1,28 @@
-PowerPlugs:
-  - name: 'snowman'
-    codes: 
-      - codeOn: 123
-      - codeOff: 456
-    pulselength: 123
-    protocol: 2
+Snowman:
+  type: "PowerPlug"
+  codes:
+    - 6177344
+    - 5888928
+  pulselength: 511
+  protocol: 5
+
+Globe:
+  type: "GPIODevice"
+  pin: 2
+
+Lightchain:
+  type: "PowerPlug"
+  codes:
+    - 5598644
+    - 6038564
+  pulselength: 511
+  protocol: 5
+
+Lamp:
+  type: "PowerPlug"
+  codes:
+    - 5825916
+    - 6262684
+  pulselength: 511
+  protocol: 5
+  
