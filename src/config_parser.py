@@ -16,7 +16,7 @@ class ConfigParser():
 
         self.__filePath = configFilePath
 
-    def parseConfigFile(self, configFilePath=''):
+    def parseConfigFile(self, args, configFilePath=''):
         """
         Parses the config file and returns a list of python objects.
         """
@@ -39,9 +39,9 @@ class ConfigParser():
         except yaml.ScannerError as err:
             self.__logger.error('Failed to read the config file: {}'.format(err))
             raise
-        return self.__parseTypes(parsedConfiguration)
+        return self.__parseTypes(parsedConfiguration, args)
 
-    def __parseTypes(self, parsedConfigFile):
+    def __parseTypes(self, parsedConfigFile, args):
         """
         Iterates over all parsed keys and parses the devices.
         Returns a dict which associates every key with the parsed python object.
@@ -53,7 +53,7 @@ class ConfigParser():
                 devType = curDev['type']
 
                 if devType == 'PowerPlug':
-                    parsedPlug = self.__parsePowerPlug(curDev, curDevName)
+                    parsedPlug = self.__parsePowerPlug(curDev, curDevName, args)
 
                     if parsedPlug is not None:
                         outDict[curDevName] = parsedPlug
@@ -75,7 +75,7 @@ class ConfigParser():
 
         return outDict
 
-    def __parsePowerPlug(self, powerPlugRaw, devName):
+    def __parsePowerPlug(self, powerPlugRaw, devName, args):
         """
         Returns the PowerPlug object parsed from the passed object model.
         """
@@ -85,7 +85,17 @@ class ConfigParser():
             pulselength = powerPlugRaw['pulselength']
             protocol = powerPlugRaw['protocol']
 
-            outPlug = PowerPlug(codes, name=devName, pulselength=pulselength, protocol=protocol)
+            if args.enable_pin:
+                outPlug = PowerPlug(codes,\
+                    name=devName,\
+                    pulselength=pulselength,\
+                    protocol=protocol,\
+                    setEnable=True,\
+                    enablePin=args.enable_pin[0]
+                )
+
+            else:
+                outPlug = PowerPlug(codes, name=devName, pulselength=pulselength, protocol=protocol)
         
         except KeyError as kerr:
             self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))

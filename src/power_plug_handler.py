@@ -1,7 +1,8 @@
 import logging
 import coloredlogs
+import RPi.GPIO as GPIO
 from rpi_rf import RFDevice
-
+from time import sleep
 from .rfdevice_factory import RFDeviceFactory
 
 """
@@ -9,11 +10,13 @@ This service handles the power plugs.
 """
 
 class PowerPlugHandler():
-    def __init__(self, senderGpioPin, sendRepeat=10):
+    def __init__(self, senderGpioPin, sendRepeat=10, setEnablePin=False, enablePin=0):
         self.__logger = logging.getLogger('Power Plug Service')
         coloredlogs.install(level='DEBUG', logger=self.__logger)
 
         self.__activatedPowerPlugs = []
+        self.__needsEnablePin = setEnablePin
+        self.__enablePin = enablePin
         self.__rfDevice = RFDeviceFactory.createRFDeviceFactory().createRFDevice(senderGpioPin, sendRepeat=sendRepeat)
 
     def turnOn(self, powerplug):
@@ -33,4 +36,15 @@ class PowerPlugHandler():
         self.__logger.debug('Pulselenght: {}'.format(pluselength))
         self.__logger.debug('Protocol: {}'.format(protocol))
         
+        # If the enable pin is set, pull it high before each transaction and
+        # wait a bit
+        if self.__needsEnablePin:
+            self.__logger.debug(f'Setting ENABLED pin {self.__enablePin} to HIGH')
+            GPIO.output(self.__enablePin, GPIO.HIGH)
+            sleep(0.01)
+
         self.__rfDevice.tx_code(code, protocol, pluselength)
+
+        if self.__needsEnablePin:
+            self.__logger.debug(f'Setting ENABLED pin {self.__enablePin} to LOW')
+            GPIO.output(self.__enablePin, GPIO.LOW)
