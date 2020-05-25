@@ -18,7 +18,6 @@ class GPIODevice(Device):
 
         self.__pin = pin
 
-        GPIO.setmode(GPIO.BCM)
         GPIO.setup(pin, GPIO.OUT)
     
     def getPin(self):

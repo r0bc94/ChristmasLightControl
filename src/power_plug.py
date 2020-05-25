@@ -5,14 +5,14 @@ Represents a PowerPlug with all the associated attributes.
 """
 
 class PowerPlug(Device):
-    def __init__(self, codeOnOff, name='', pulselength=0, protocol=0, senderGpioPin=17, sendRepeat=10):
+    def __init__(self, codeOnOff, name='', pulselength=0, protocol=0, senderGpioPin=17, sendRepeat=10, setEnable=False, enablePin=0):
         super().__init__(name)
         self.setOnOffCodes(codeOnOff)
         
         self.__pulselength = pulselength
         self.__protocol = protocol
 
-        self.__handler = PowerPlugHandler(senderGpioPin, sendRepeat=sendRepeat)
+        self.__handler = PowerPlugHandler(senderGpioPin, sendRepeat=sendRepeat, setEnablePin=setEnable, enablePin=enablePin)
 
     def setOnOffCodes(self, onOffCodes: tuple):
         if len(onOffCodes) != 2:
@@ -44,3 +44,4 @@ class PowerPlug(Device):
     codes = property(getOnOffCodes, setOnOffCodes)
     pulselength = property(getPulselength, setPulselength)
     protocol = property(getProtocol, setProtocol)
+    

@@ -21,6 +21,7 @@ argParser.add_argument('-t', '--topic', type=str, default='', help='Root topic, 
 argParser.add_argument('-a', '--host', type=str, default='127.0.0.1', help='Host of the MQTT Broker to which we want so subscribe.')
 argParser.add_argument('-p', '--port', type=int, default=1883, help='Port of the MQTT Broker to which we want to subscribe.')
 argParser.add_argument('-c', '--configpath', type=str, default='config.yaml', help='Search path for the config file. Per default, this file is located in the applications main directory.')
+argParser.add_argument('-e', '--enable_pin', type=int, nargs=1)
 
 # Parse the command line arguments
 args = argParser.parse_args()
@@ -29,13 +30,23 @@ args = argParser.parse_args()
 configParser = ConfigParser(configFilePath=args.configpath)
 devDict = {}
 try:
-    devDict = configParser.parseConfigFile()
+    devDict = configParser.parseConfigFile(args)
 except FileNotFoundError:
     exit(1)
 except Exception as ex:
     logger.error('Unexpected Error: {}'.format(ex))
     logger.exception(ex)
     exit(1)
+
+# Initialize the GPIO pins
+GPIO.setmode(GPIO.BCM)
+
+if args.enable_pin:
+    pin = args.enable_pin[0]
+    logger.info(f'Enable Pin for the RF - Devices was set to pin {pin}')
+    logger.debug(f'Setting pin {pin} as OUTPUT')
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.LOW)
 
 def on_connect(client, userdata, flags, rc):
     logger.info('Sucessfully connected to the mqtt broker')
