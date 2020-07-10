@@ -1,4 +1,4 @@
-Snowman:
+fiberglaslampe:
   type: "PowerPlug"
   codes:
     - 6177344
@@ -6,19 +6,15 @@ Snowman:
   pulselength: 511
   protocol: 5
 
-Globe:
-  type: "GPIODevice"
-  pin: 2
-
-Lightchain:
+blauelampe:
   type: "PowerPlug"
   codes:
-    - 5598644
+    - 5825908 
     - 6038564
   pulselength: 511
   protocol: 5
 
-Lamp:
+grauelampe:
   type: "PowerPlug"
   codes:
     - 5825916

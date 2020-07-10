@@ -15,3 +15,7 @@ PyYAML = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+start = "python christmas_light_control.py -t lampe/ -e 27" 
+start-debug = "python christmas_light_control.py -t lampe/ -e 27" 
