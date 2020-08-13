@@ -12,6 +12,7 @@ coloredlogs = "*"
 pytest = "*"
 pytest-only = "*"
 PyYAML = "*"
+configargparse = "*"
 
 [requires]
 python_version = "3.8"
