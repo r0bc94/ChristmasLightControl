@@ -6,49 +6,49 @@ from src.power_plug import PowerPlug
 from src.gpio_device import GPIODevice
 
 """
-This class represents the config parser, which reads the simple 
+This class represents the devices parser, which reads the simple 
 yaml file and converts the object into python objects.
 """
-class ConfigParser():
-    def __init__(self, configFilePath='./config.yaml'):
-        self.__logger = logging.getLogger('ConfigParser')
+class DevicesParser():
+    def __init__(self, devicesFilePath='./devices.yaml'):
+        self.__logger = logging.getLogger('DevicesParser')
         coloredlogs.install(level='DEBUG', logger=self.__logger)
 
-        self.__filePath = configFilePath
+        self.__filePath = devicesFilePath
 
-    def parseConfigFile(self, args, configFilePath=''):
+    def parseDevicesFile(self, args, devicesFilePath=''):
         """
-        Parses the config file and returns a list of python objects.
+        Parses the devices file and returns a list of python objects.
         """
-        self.__filePath = configFilePath if configFilePath else self.__filePath
+        self.__filePath = devicesFilePath if devicesFilePath else self.__filePath
         fileContent = ""
         try:
-            with open(self.__filePath, 'r') as configFile:
-                fileContent = configFile.read()
+            with open(self.__filePath, 'r') as devicesFile:
+                fileContent = devicesFile.read()
         except FileNotFoundError:
-            self.__logger.error('No config file was found for: {}'.format(self.__filePath))
+            self.__logger.error('No devices file was found for: {}'.format(self.__filePath))
             raise
         except IOError as ioErr:
-            self.__logger.exception('Error while trying to open the config file: {}'.format(ioErr))
+            self.__logger.exception('Error while trying to open the devices file: {}'.format(ioErr))
             raise
 
-        parsedConfiguration = None
+        parsedDevicesuration = None
         try:
-            parsedConfiguration = yaml.load(fileContent)
-            print(parsedConfiguration)
+            parsedDevicesuration = yaml.load(fileContent)
+            print(parsedDevicesuration)
         except yaml.ScannerError as err:
-            self.__logger.error('Failed to read the config file: {}'.format(err))
+            self.__logger.error('Failed to read the devices file: {}'.format(err))
             raise
-        return self.__parseTypes(parsedConfiguration, args)
+        return self.__parseTypes(parsedDevicesuration, args)
 
-    def __parseTypes(self, parsedConfigFile, args):
+    def __parseTypes(self, parsedDevicesFile, args):
         """
         Iterates over all parsed keys and parses the devices.
         Returns a dict which associates every key with the parsed python object.
         """
         outDict = {}
 
-        for curDevName, curDev in parsedConfigFile.items():
+        for curDevName, curDev in parsedDevicesFile.items():
             try:
                 devType = curDev['type']
 
@@ -71,7 +71,7 @@ class ConfigParser():
                 self.__logger.error('No Type for device {} given! Ignoring...'.format(curDevName))
 
         if len(outDict) == 0:
-            self.__logger.warning('No devices where loaded! Please recheck your configuration.')
+            self.__logger.warning('No devices where loaded! Please recheck your devicesuration.')
 
         return outDict
 
