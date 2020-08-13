@@ -9,7 +9,8 @@ from src.power_plug import PowerPlug
 from src.gpio_device import GPIODevice
 
 class SampleArgs:
-    enable_pin = False
+    rf_enable_pin = False
+    rf_gpio_pin = 17
 
 class TestDevicesParser():
 
