@@ -1,0 +1,10 @@
+[Unit]
+Description=Christmas Light Control Service 
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/christmas/christmas_light_control
+ExecStart=/bin/sh -c "pipenv run start-debug"
+
+[Install]
+WantedBy=multi-user.target

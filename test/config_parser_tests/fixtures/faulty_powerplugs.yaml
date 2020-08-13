@@ -1,0 +1,11 @@
+PowerPlug1:
+  type: "PowerPlug"
+  codeeeeeeeeeeeees:
+    - 123
+    - 567
+  pulselength: 567
+  protocol: 0
+
+GPIODevice1:
+  type: "GPIODevice"
+  pin: 2
