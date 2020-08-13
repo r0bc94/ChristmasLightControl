@@ -22,3 +22,6 @@ grauelampe:
   pulselength: 511
   protocol: 5
   
+catlamp:
+  type: "IRDevice"
+  repeat_count: 2
