@@ -85,17 +85,18 @@ class DevicesParser():
             pulselength = powerPlugRaw['pulselength']
             protocol = powerPlugRaw['protocol']
 
-            if args.enable_pin:
+            if args.rf_enable_pin:
                 outPlug = PowerPlug(codes,\
                     name=devName,\
+                    senderGpioPin=args.rf_gpio_pin,\
                     pulselength=pulselength,\
                     protocol=protocol,\
                     setEnable=True,\
-                    enablePin=args.enable_pin[0]
+                    enablePin=args.rf_enable_pin[0]
                 )
 
             else:
-                outPlug = PowerPlug(codes, name=devName, pulselength=pulselength, protocol=protocol)
+                outPlug = PowerPlug(codes, name=devName, senderGpioPin=args.rf_gpio_pin, pulselength=pulselength, protocol=protocol)
         
         except KeyError as kerr:
             self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))

@@ -2,7 +2,7 @@
 import coloredlogs
 import logging
 import paho.mqtt.client as mqtt
-import argparse
+import configargparse
 
 import RPi.GPIO as GPIO
 
@@ -16,12 +16,19 @@ coloredlogs.DEFAULT_LOG_FORMAT = '[%(asctime)s] %(name)s %(levelname)s %(message
 coloredlogs.install(level='DEBUG', logger=logger)
 
 # Register the command line arguments.
-argParser = argparse.ArgumentParser(description='Simple application that listens to mqtt messages from a defined broker and toggles defined devices.')
-argParser.add_argument('-t', '--topic', type=str, default='', help='Root topic, where we want to subscribe to.')
-argParser.add_argument('-a', '--host', type=str, default='127.0.0.1', help='Host of the MQTT Broker to which we want so subscribe.')
-argParser.add_argument('-p', '--port', type=int, default=1883, help='Port of the MQTT Broker to which we want to subscribe.')
+argParser = configargparse.ArgParser(default_config_files=['config.conf'], description='Simple application that listens to mqtt messages from a defined broker and toggles defined devices.')
+argParser.add('-c', '--my-config', required=False, is_config_file=True, help='Path to a config file which should be used instead.')
 argParser.add_argument('-dev', '--devicespath', type=str, default='devices.yaml', help='Search path for the devices file. Per default, this file is located in the applications main directory.')
-argParser.add_argument('-e', '--enable_pin', type=int, nargs=1)
+
+mqttConfig = argParser.add_argument_group('MQTT')
+
+mqttConfig.add_argument('-t', '--topic', type=str, default='', help='Root topic, where we want to subscribe to.')
+mqttConfig.add_argument('-a', '--host', type=str, default='127.0.0.1', help='Host of the MQTT Broker to which we want so subscribe.')
+mqttConfig.add_argument('-p', '--port', type=int, default=1883, help='Port of the MQTT Broker to which we want to subscribe.')
+
+rfDeviceConfig = argParser.add_argument_group('RF Device')
+rfDeviceConfig.add_argument('--rf_gpio_pin', help='The pin where the RF - Transmitter is connected to', type=int, default=17)
+rfDeviceConfig.add_argument('-e', '--rf_enable_pin', help='If your Transmitter has an optional enable pin, this needs to be set', type=int, nargs=1)
 
 # Parse the command line arguments
 args = argParser.parse_args()
@@ -41,8 +48,8 @@ except Exception as ex:
 # Initialize the GPIO pins
 GPIO.setmode(GPIO.BCM)
 
-if args.enable_pin:
-    pin = args.enable_pin[0]
+if args.rf_enable_pin:
+    pin = args.rf_enable_pin[0]
     logger.info(f'Enable Pin for the RF - Devices was set to pin {pin}')
     logger.debug(f'Setting pin {pin} as OUTPUT')
     GPIO.setup(pin, GPIO.OUT)
