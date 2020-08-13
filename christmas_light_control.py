@@ -57,9 +57,10 @@ if args.rf_enable_pin:
 
 def on_connect(client, userdata, flags, rc):
     logger.info('Sucessfully connected to the mqtt broker')
+    topic = args.topic + '#' if args.topic[-1] == '/' else f'{args.topic}/#'
 
-    logger.debug('Subscribing to root topic: {}'.format(args.topic + '#'))
-    client.subscribe(args.topic + '#')
+    logger.debug(f'Subscribing to root topic: {topic}')
+    client.subscribe(topic)
 
 def on_message(client, userdata, message):
     logger.debug('Received mqtt messaged from the broker')
