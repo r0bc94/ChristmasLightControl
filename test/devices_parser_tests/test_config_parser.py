@@ -1,20 +1,28 @@
 import pytest
 import logging
+import RPi.GPIO as GPIO
 from collections import OrderedDict
 
-from src.config_parser import ConfigParser
+from src.devices_parser import DevicesParser
 
 from src.power_plug import PowerPlug
 from src.gpio_device import GPIODevice
 
-class TestConfigParser():
-    
-    @pytest.fixture(scope = 'session')
-    def configParser(self):
-        return ConfigParser()
+class SampleArgs:
+    enable_pin = False
 
-    def testParseEverything(self, configParser):
-        print('It should read a good config file, which contains one PowerPlug and one GPIO Device.')
+class TestDevicesParser():
+
+    @pytest.fixture(scope = 'session', autouse = True)
+    def setGPIOPinLayout(self):
+        GPIO.setmode(GPIO.BCM)
+
+    @pytest.fixture(scope = 'session')
+    def devicesParser(self):
+        return DevicesParser()
+
+    def testParseEverything(self, devicesParser):
+        print('It should read a good devices file, which contains one PowerPlug and one GPIO Device.')
 
         expectedResult = {
             'PowerPlug1': PowerPlug(
@@ -25,28 +33,28 @@ class TestConfigParser():
             'GPIODevice1': GPIODevice('GPIODevice1', 2)
         }
 
-        parsedConfig = configParser.parseConfigFile(configFilePath='test/config_parser_tests/fixtures/everything.yaml')
+        parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/everything.yaml')
         
-        assert isinstance(parsedConfig, dict)
-        assert len(parsedConfig) == 2
+        assert isinstance(parsedDevices, dict)
+        assert len(parsedDevices) == 2
 
-        self.__checkResultsNew(parsedConfig, expectedResult)
+        self.__checkResultsNew(parsedDevices, expectedResult)
 
-    def testParseFaultyPPs(self, configParser):
+    def testParseFaultyPPs(self, devicesParser):
         print('It should at least parse all GPIODevices, even if the PowerPlugs format is wrong')
 
         expectedResult = {
             'GPIODevice1': GPIODevice('GPIODevice1', 2)
         }
 
-        parsedConfig = configParser.parseConfigFile(configFilePath='test/config_parser_tests/fixtures/faulty_powerplugs.yaml')
+        parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/faulty_powerplugs.yaml')
 
-        assert isinstance(parsedConfig, dict)
-        assert len(parsedConfig) == 1
+        assert isinstance(parsedDevices, dict)
+        assert len(parsedDevices) == 1
 
-        self.__checkResults(parsedConfig, expectedResult)
+        self.__checkResults(parsedDevices, expectedResult)
 
-    def testParseFaultyGPIODevs(self, configParser):
+    def testParseFaultyGPIODevs(self, devicesParser):
         print('It should at least parse all PowerPlugs, even if the GPIODevice format is wrong')
 
         expectedResult = {
@@ -57,12 +65,12 @@ class TestConfigParser():
                             pulselength=567)
         }
 
-        parsedConfig = configParser.parseConfigFile(configFilePath='test/config_parser_tests/fixtures/faulty_gpiodevices.yaml')
+        parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/faulty_gpiodevices.yaml')
 
-        assert isinstance(parsedConfig, dict)
-        assert len(parsedConfig) == 1
+        assert isinstance(parsedDevices, dict)
+        assert len(parsedDevices) == 1
 
-        self.__checkResults(parsedConfig, expectedResult)
+        self.__checkResults(parsedDevices, expectedResult)
 
     def __checkResults(self, actual, expected):
         for currentKey in expected.keys():
