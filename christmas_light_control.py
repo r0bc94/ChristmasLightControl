@@ -6,7 +6,7 @@ import argparse
 
 import RPi.GPIO as GPIO
 
-from src.config_parser import ConfigParser
+from src.devices_parser import DevicesParser
 
 # Create a logger instance
 logger = logging.getLogger('MainApplication')
@@ -20,17 +20,17 @@ argParser = argparse.ArgumentParser(description='Simple application that listens
 argParser.add_argument('-t', '--topic', type=str, default='', help='Root topic, where we want to subscribe to.')
 argParser.add_argument('-a', '--host', type=str, default='127.0.0.1', help='Host of the MQTT Broker to which we want so subscribe.')
 argParser.add_argument('-p', '--port', type=int, default=1883, help='Port of the MQTT Broker to which we want to subscribe.')
-argParser.add_argument('-c', '--configpath', type=str, default='config.yaml', help='Search path for the config file. Per default, this file is located in the applications main directory.')
+argParser.add_argument('-dev', '--devicespath', type=str, default='devices.yaml', help='Search path for the devices file. Per default, this file is located in the applications main directory.')
 argParser.add_argument('-e', '--enable_pin', type=int, nargs=1)
 
 # Parse the command line arguments
 args = argParser.parse_args()
 
-# Parse the config file
-configParser = ConfigParser(configFilePath=args.configpath)
+# Parse the devices file
+devicesParser = DevicesParser(devicesFilePath=args.devicespath)
 devDict = {}
 try:
-    devDict = configParser.parseConfigFile(args)
+    devDict = devicesParser.parseDevicesFile(args)
 except FileNotFoundError:
     exit(1)
 except Exception as ex:
