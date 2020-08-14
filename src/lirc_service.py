@@ -10,7 +10,9 @@ def runLircCommand(remoteName: str, key: str, repeatCount=1, timeout=2):
     logger.debug(f'Running Command: {irSendCommand}')
 
     try:
-        subprocess.run(irSendCommand, timeout=timeout, capture_output=True, shell=True)
+        process = subprocess.run(irSendCommand, timeout=timeout, capture_output=True, shell=True)
+        process.check_returncode()
+        logger.debug('irsend command executed successfully')
     except subprocess.TimeoutExpired as timeout: 
         logger.warning('The executed irsend command took to long to respond')
         logger.warning('Depending on your configuration, this may be normal')
