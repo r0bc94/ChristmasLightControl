@@ -24,4 +24,4 @@ grauelampe:
   
 katzenlampe:
   type: "IRDevice"
-  repeat_count: 2
+  repeat_count: 1
