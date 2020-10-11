@@ -1,9 +1,9 @@
 fiberglaslampe:
   type: "PowerPlug"
   codes:
-    - 6177344
+    - 5825904 
     - 5888928
-  pulselength: 511
+  pulselength: 510 
   protocol: 5
 
 blauelampe:
