@@ -4,6 +4,7 @@ import coloredlogs
 
 from src.power_plug import PowerPlug
 from src.gpio_device import GPIODevice
+from src.ir_device import IRDevice
 
 """
 This class represents the devices parser, which reads the simple 
@@ -63,6 +64,12 @@ class DevicesParser():
 
                     if parsedGpioDev is not None:
                         outDict[curDevName] = parsedGpioDev
+
+                elif devType == 'IRDevice':
+                    parsedIrDev = self.__parseIrDevice(curDev, curDevName)
+
+                    if parsedIrDev is not None:
+                        outDict[curDevName] = parsedIrDev
                 
                 else:
                     self.__logger.error('Unknown device type: {}, ignoring...'.format(curDevName))
@@ -117,3 +124,28 @@ class DevicesParser():
             self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
 
         return outGpioDevice
+
+    def __parseIrDevice(self, irDeviceRaw, devName):
+        """
+        Returns the parsed IR Device
+        """
+        options = dict(\
+            powerKeyName = irDeviceRaw.get('powerkey_name'),\
+            repeatCount = irDeviceRaw.get('repeat_count'),\
+            timeout = irDeviceRaw.get('timeout')\
+        )
+
+        # Sanity check the provided arguments and build kwargs dict
+        kwargs = {}
+        for k, v in options.items():
+            if v is None:
+                continue
+
+            if k == 'repeatCount' or k == 'timeout':
+                if not isinstance(v, int):
+                    self.__logger.warning(f'Argument {k} is set to a non integer value. Skipping IRDevice...')
+                    return None
+
+                kwargs[k] = int(v)
+
+        return IRDevice(devName, **kwargs)

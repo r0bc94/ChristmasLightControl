@@ -7,6 +7,7 @@ import configargparse
 import RPi.GPIO as GPIO
 
 from src.devices_parser import DevicesParser
+from src.ir_device import IRDevice
 
 # Create a logger instance
 logger = logging.getLogger('MainApplication')
@@ -80,6 +81,8 @@ def on_message(client, userdata, message):
         devToToggle.turnOn()
     elif messagePayload.upper() == 'OFF':
         devToToggle.turnOff()
+    elif isinstance(devToToggle, IRDevice):
+        devToToggle.sendKey(messagePayload.upper())
     else:
         logger.warning('Invalid message content: {}'.format(messagePayload))
 

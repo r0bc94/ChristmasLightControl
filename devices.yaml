@@ -1,9 +1,9 @@
 fiberglaslampe:
   type: "PowerPlug"
   codes:
-    - 6177344
+    - 5825904 
     - 5888928
-  pulselength: 511
+  pulselength: 510 
   protocol: 5
 
 blauelampe:
@@ -22,3 +22,6 @@ grauelampe:
   pulselength: 511
   protocol: 5
   
+katzenlampe:
+  type: "IRDevice"
+  repeat_count: 1
