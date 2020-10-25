@@ -11,8 +11,7 @@ This service handles the power plugs.
 
 class PowerPlugHandler():
     def __init__(self, senderGpioPin, sendRepeat=20, setEnablePin=False, enablePin=0):
-        self.__logger = logging.getLogger('Power Plug Service')
-        coloredlogs.install(level='DEBUG', logger=self.__logger)
+        self.__logger = logging.getLogger().getChild('Power Plug Handler')
 
         self.__activatedPowerPlugs = []
         self.__needsEnablePin = setEnablePin

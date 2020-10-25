@@ -13,11 +13,9 @@ setting a designated GPIO pin.
 class GPIODevice(Device):
     def __init__(self, name: str, pin: int):
         super().__init__(name)
-        self.__logger = logging.getLogger('GPIODevice')
-        coloredlogs.install(level='DEBUG', logger=self.__logger)
-
+        self.__logger = logging.getLogger().getChild('GPIO Device')
         self.__pin = pin
-
+        
         GPIO.setup(pin, GPIO.OUT)
     
     def getPin(self):
