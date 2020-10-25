@@ -27,7 +27,7 @@ class TestDevicesParser():
 
         expectedResult = {
             'PowerPlug1': PowerPlug(
-                [123, 456],
+                [123], [456],
                 name='PowerPlug1',
                 protocol=1,
                 pulselength=234),
@@ -60,7 +60,7 @@ class TestDevicesParser():
 
         expectedResult = {
             'PowerPlug1': PowerPlug(
-                            [123, 567],
+                            [123], [567],
                             name='PowerPlug1',
                             protocol=0,
                             pulselength=567)
@@ -105,7 +105,8 @@ class TestDevicesParser():
             assert actDev.name == expDev.name
 
             if isinstance(actDev, PowerPlug):
-                assert actDev.codes == expDev.codes
+                assert actDev.onCodes == expDev.onCodes
+                assert actDev.offCodes == expDev.offCodes
                 assert actDev.protocol == expDev.protocol
                 assert actDev.pulselength == expDev.pulselength
             
