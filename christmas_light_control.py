@@ -12,13 +12,13 @@ from src.ir_device import IRDevice
 # Create the logger
 logger = logging.getLogger()
 coloredlogs.DEFAULT_LOG_FORMAT = '[%(asctime)s] %(name)s %(levelname)s %(message)s'
-coloredlogs.install(logger=logger)
-logger.setLevel(logging.INFO)
+coloredlogs.install(level=logging.DEBUG, logger=logger)
 
 # Register the command line arguments.
 argParser = configargparse.ArgParser(default_config_files=['config.conf'], description='Simple application that listens to mqtt messages from a defined broker and toggles defined devices.')
 argParser.add('-c', '--my-config', required=False, is_config_file=True, help='Path to a config file which should be used instead.')
 argParser.add_argument('-dev', '--devicespath', type=str, default='devices.yaml', help='Search path for the devices file. Per default, this file is located in the applications main directory.')
+argParser.add_argument('-d', '--debug', default=False, action='store_true', help='Log various debug informations. The log output might be a bit spammy.')
 
 mqttConfig = argParser.add_argument_group('MQTT')
 
@@ -32,6 +32,10 @@ rfDeviceConfig.add_argument('-e', '--rf_enable_pin', help='If your Transmitter h
 
 # Parse the command line arguments
 args = argParser.parse_args()
+if not args.debug:
+    logger.setLevel(logging.INFO)
+else:
+    logger.debug('Debug logging activated')
 
 # Parse the devices file
 devicesParser = DevicesParser(devicesFilePath=args.devicespath)
