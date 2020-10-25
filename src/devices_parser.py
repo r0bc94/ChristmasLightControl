@@ -92,12 +92,16 @@ class DevicesParser():
 
             onCodes = []
             offCodes = []
+
+            print(codes)
+
             if isinstance(codes, list):
                 onCodes = [codes[0]]
                 offCodes = [codes[1]]
             elif isinstance(codes, dict):
-                onCodes = codes['on']
-                offCodes = codes['off']
+                # YAML actually interprets the strings 'ON' and 'OFF' as boolean values.
+                onCodes = codes[True]
+                offCodes = codes[False]
             else:
                 raise AttributeError('The codes are provided in the wrong format.')
 
