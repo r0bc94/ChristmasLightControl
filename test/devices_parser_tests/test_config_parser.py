@@ -41,7 +41,6 @@ class TestDevicesParser():
 
         self.__checkResultsNew(parsedDevices, expectedResult)
 
-    @pytest.mark.only
     def testParsePowerPlugMultipleRFCodes(self, devicesParser):
         print('It should read a good devices file, which contains one PowerPlug with multiple RF Codes and one GPIO Device.')
 
