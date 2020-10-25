@@ -24,8 +24,7 @@ class RFDeviceFactory():
         if RFDeviceFactory.__instance is not None:
             raise Exception('The RFDevice Factory is a singleton. Use createRFDeviceFactory')
 
-        self.__logger = logging.getLogger('RFDeviceFactory')
-        coloredlogs.install(level='DEBUG', logger=self.__logger)
+        self.__logger = logging.getLogger().getChild('RF Device Factory')
 
         self.__logger.debug('RFDeviceFactory singleton created')
 

@@ -12,9 +12,7 @@ yaml file and converts the object into python objects.
 """
 class DevicesParser():
     def __init__(self, devicesFilePath='./devices.yaml'):
-        self.__logger = logging.getLogger('DevicesParser')
-        coloredlogs.install(level='DEBUG', logger=self.__logger)
-
+        self.__logger = logging.getLogger().getChild('Device Parser')
         self.__filePath = devicesFilePath
 
     def parseDevicesFile(self, args, devicesFilePath=''):

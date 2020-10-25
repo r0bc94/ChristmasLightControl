@@ -7,8 +7,7 @@ from .lirc_service import runLircCommand
 
 class IRDevice(Device):
     def __init__(self, name: str, powerKeyName='KEY_POWER', repeatCount=1, timeout=2):
-        self.__logger = logging.getLogger().getChild('IR_Device')
-        coloredlogs.install(level='DEBUG', logger=self.__logger)
+        self.__logger = logging.getLogger().getChild('IR Device')
 
         self.__logger.debug(f'Creating new IRDevice')
         self.__logger.debug(f'Name: {name}')

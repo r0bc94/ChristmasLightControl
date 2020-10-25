@@ -9,12 +9,11 @@ import RPi.GPIO as GPIO
 from src.devices_parser import DevicesParser
 from src.ir_device import IRDevice
 
-# Create a logger instance
-logger = logging.getLogger('MainApplication')
-
-# Create a logging instance
+# Create the logger
+logger = logging.getLogger()
 coloredlogs.DEFAULT_LOG_FORMAT = '[%(asctime)s] %(name)s %(levelname)s %(message)s'
-coloredlogs.install(level='DEBUG', logger=logger)
+coloredlogs.install(logger=logger)
+logger.setLevel(logging.INFO)
 
 # Register the command line arguments.
 argParser = configargparse.ArgParser(default_config_files=['config.conf'], description='Simple application that listens to mqtt messages from a defined broker and toggles defined devices.')
