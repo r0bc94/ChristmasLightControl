@@ -90,8 +90,19 @@ class DevicesParser():
             pulselength = powerPlugRaw['pulselength']
             protocol = powerPlugRaw['protocol']
 
+            onCodes = []
+            offCodes = []
+            if isinstance(codes, list):
+                onCodes = [codes[0]]
+                offCodes = [codes[1]]
+            elif isinstance(codes, dict):
+                onCodes = codes['on']
+                offCodes = codes['off']
+            else:
+                raise AttributeError('The codes are provided in the wrong format.')
+
             if args.rf_enable_pin:
-                outPlug = PowerPlug(codes,\
+                outPlug = PowerPlug(onCodes, offCodes,\
                     name=devName,\
                     senderGpioPin=args.rf_gpio_pin,\
                     pulselength=pulselength,\
@@ -101,10 +112,13 @@ class DevicesParser():
                 )
 
             else:
-                outPlug = PowerPlug(codes, name=devName, senderGpioPin=args.rf_gpio_pin, pulselength=pulselength, protocol=protocol)
+                outPlug = PowerPlug(onCodes, offCodes, name=devName, senderGpioPin=args.rf_gpio_pin, pulselength=pulselength, protocol=protocol)
         
         except KeyError as kerr:
             self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
+        
+        except AttributeError as atrerr:
+            self.__logger.warning('{}, skipping PowerPlug'.format(str(atrerr)))
     
         return outPlug
 

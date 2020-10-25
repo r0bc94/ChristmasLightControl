@@ -5,7 +5,6 @@ import RPi.GPIO as GPIO
 from rpi_rf import RFDevice
 
 from .device import Device
-from .power_plug_handler import PowerPlugHandler
 from .rfdevice_factory import RFDeviceFactory
 
 """
