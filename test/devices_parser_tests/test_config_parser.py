@@ -41,6 +41,25 @@ class TestDevicesParser():
 
         self.__checkResultsNew(parsedDevices, expectedResult)
 
+    @pytest.mark.only
+    def testParsePowerPlugMultipleRFCodes(self, devicesParser):
+        print('It should read a good devices file, which contains one PowerPlug with multiple RF Codes and one GPIO Device.')
+
+        expectedResult = {
+            'PowerPlug1': PowerPlug(
+                [123, 456], [789, 0],
+                name='PowerPlug1',
+                protocol=1,
+                pulselength=234),
+        }
+
+        parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/powerplug_multiple_codes.yaml')
+        
+        assert isinstance(parsedDevices, dict)
+        assert len(parsedDevices) == 1
+
+        self.__checkResultsNew(parsedDevices, expectedResult)
+
     def testParseFaultyPPs(self, devicesParser):
         print('It should at least parse all GPIODevices, even if the PowerPlugs format is wrong')
 
@@ -101,12 +120,12 @@ class TestDevicesParser():
         orderedExpected = OrderedDict(sorted(expected.items()))
 
         for (actDevKey, actDev), (expDevKey, expDev) in zip(orderedActual.items(), orderedExpected.items()):
-            assert actDevKey == expDevKey
-            assert actDev.name == expDev.name
+            assert actDevKey == expDevKey, "a"
+            assert actDev.name == expDev.name, "b"
 
             if isinstance(actDev, PowerPlug):
-                assert actDev.onCodes == expDev.onCodes
-                assert actDev.offCodes == expDev.offCodes
+                assert actDev.onCodes == expDev.onCodes, "c"
+                assert actDev.offCodes == expDev.offCodes, "d"
                 assert actDev.protocol == expDev.protocol
                 assert actDev.pulselength == expDev.pulselength
             
