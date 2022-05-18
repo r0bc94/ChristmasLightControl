@@ -25,3 +25,27 @@ grauelampe:
 katzenlampe:
   type: "IRDevice"
   repeat_count: 1
+
+whitelamp:
+  type: "PowerPlug"
+  codes:
+    - 1381719
+    - 1381716
+  pulselength: 320
+  protocol: 1
+
+saltlamp:
+  type: "PowerPlug"
+  codes:
+    - 1394007
+    - 1394004
+  pulselength: 320
+  protocol: 1
+
+kallax:
+  type: "PowerPlug"
+  codes:
+    - 1397079
+    - 1397076
+  pulselength: 320
+  protocol: 1

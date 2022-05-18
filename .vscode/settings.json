@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
         "pulselength"
-    ]
+    ],
+    "python.pythonPath": "/home/pi/.local/share/virtualenvs/christmas_light_control-O7uxOcql/bin/python"
 }
