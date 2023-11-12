@@ -1,6 +1,0 @@
-paho-mqtt
-rpi-rf
-pyyaml
-coloredlogs
-pytest
-pytest-only

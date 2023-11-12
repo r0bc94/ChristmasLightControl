@@ -15,7 +15,7 @@ PyYAML = "*"
 configargparse = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
 
 [scripts]
 start = "python christmas_light_control.py -t lampe/ -e 27" 
