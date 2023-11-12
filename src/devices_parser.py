@@ -33,7 +33,7 @@ class DevicesParser():
 
         parsedDevicesuration = None
         try:
-            parsedDevicesuration = yaml.load(fileContent)
+            parsedDevicesuration = yaml.load(fileContent, Loader=yaml.CLoader)
             print(parsedDevicesuration)
         except yaml.ScannerError as err:
             self.__logger.error('Failed to read the devices file: {}'.format(err))
