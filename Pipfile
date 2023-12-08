@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-only = "*"
+
+[packages]
+paho-mqtt = "*"
+rpi-rf = "*"
+coloredlogs = "*"
+PyYAML = "*"
+configargparse = "*"
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+start = "python christmas_light_control.py -t lampe/ -e 27" 
+start-debug = "python christmas_light_control.py -t lampe/ -e 27 -d" 
