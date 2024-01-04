@@ -1,0 +1,28 @@
+services: 
+  homeassistant:
+    image: homeassistant/home-assistant:latest
+    ports:
+      - "8123:8123"
+    volumes:
+      - "homeassistant_volume:/config"
+    networks:
+      - homeassistant_network
+
+  mqttbroker:
+    image: eclipse-mosquitto
+    expose:
+      - 1883
+      - 1884
+    ports:
+      - "1883:1883"
+      - "1884:1884"
+    networks:
+      - homeassistant_network
+    command: "mosquitto -c /mosquitto-no-auth.conf"
+  
+volumes:
+  homeassistant_volume:
+
+networks:
+  homeassistant_network:
+
