@@ -15,6 +15,7 @@ except (RuntimeError, ModuleNotFoundError):
 
 from src.devices_parser import DevicesParser
 from src.ir_device import IRDevice
+from src.homeassistant import expose_devices
 
 # Create the logger
 logger = logging.getLogger()
@@ -36,6 +37,10 @@ mqttConfig.add_argument('-p', '--port', type=int, default=1883, help='Port of th
 rfDeviceConfig = argParser.add_argument_group('RF Device')
 rfDeviceConfig.add_argument('--rf_gpio_pin', help='The pin where the RF - Transmitter is connected to', type=int, default=17)
 rfDeviceConfig.add_argument('-e', '--rf_enable_pin', help='If your Transmitter has an optional enable pin, this needs to be set', type=int, nargs=1)
+
+homeassistantConfig = argParser.add_argument_group('HomeAssistant', description='Arguments used to configure the connection to homeassistant')
+homeassistantConfig.add_argument('--expose_to_homeassistant', default=False, action='store_true', help='If set, all devices read from the devices.yaml file will be exposed to homeassistant via the configured MQTT broker.')
+homeassistantConfig.add_argument('--discovery_topic', type=str, default='homeassistant', help='Root Topic name for the homeassistant discovery. Set if it needs to be changed.')
 
 # Parse the command line arguments
 args = argParser.parse_args()
@@ -107,6 +112,11 @@ client.connect(args.host, port=args.port)
 
 try:
     logger.info('Waiting for mqtt messages...')
+
+    if args.expose_to_homeassistant: 
+        logger.info('Exposing all PowerPlug Devices to Homeassistant')
+        expose_devices(devDict, client, root_topic=args.topic, discovery_topic=args.discovery_topic)
+
     client.loop_forever()
 except KeyboardInterrupt:
     logger.info('exiting...')
