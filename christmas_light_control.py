@@ -4,7 +4,14 @@ import logging
 import paho.mqtt.client as mqtt
 import configargparse
 
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO
+except (RuntimeError, ModuleNotFoundError):
+    print('Using Fake RPi GPIO Imports')
+    from fake_rpigpio import utils, RPi
+    import sys
+    utils.install()
+    sys.modules['RPi'] = RPi
 
 from src.devices_parser import DevicesParser
 from src.ir_device import IRDevice
@@ -49,15 +56,15 @@ except Exception as ex:
     logger.exception(ex)
     exit(1)
 
-# Initialize the GPIO pins
-GPIO.setmode(GPIO.BCM)
+# Initialize the RPi.GPIO pins
+RPi.GPIO.setmode(RPi.GPIO.BCM)
 
 if args.rf_enable_pin:
     pin = args.rf_enable_pin[0]
     logger.info(f'Enable Pin for the RF - Devices was set to pin {pin}')
     logger.debug(f'Setting pin {pin} as OUTPUT')
-    GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.LOW)
+    RPi.GPIO.setup(pin, RPi.GPIO.OUT)
+    RPi.GPIO.output(pin, RPi.GPIO.LOW)
 
 def on_connect(client, userdata, flags, rc):
     logger.info('Sucessfully connected to the mqtt broker')
@@ -107,7 +114,5 @@ except Exception as ex:
     logger.error('An unexpected error occured: {}'.format(ex))
     logger.exception(ex)
 finally:
-    logger.debug('Cleaning up GPIO Channels')
-    
-    # TODO: I need some sort of cleanup function in the device classes.
-    GPIO.cleanup()
+    logger.debug('Cleaning up RPi.GPIO Channels')
+    RPi.GPIO.cleanup()
