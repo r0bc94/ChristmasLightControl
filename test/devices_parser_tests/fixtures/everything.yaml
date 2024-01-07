@@ -1,4 +1,5 @@
 PowerPlug1:
+  friendlyName: 'Test PowerPlug 1'
   type: 'PowerPlug'
   codes:
     - 123
@@ -7,5 +8,6 @@ PowerPlug1:
   protocol: 1
 
 GPIODevice1:
+  friendlyName: 'Test GPIO Device 1'
   type: 'GPIODevice'
   pin: 2

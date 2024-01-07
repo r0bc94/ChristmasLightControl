@@ -1,6 +1,14 @@
 import pytest
-import logging
-import RPi.GPIO as GPIO
+
+try:
+    import RPi.GPIO
+except (RuntimeError, ModuleNotFoundError):
+    print('Using Fake RPi GPIO Imports')
+    from fake_rpigpio import utils, RPi
+    import sys
+    utils.install()
+    sys.modules['RPi'] = RPi
+
 from collections import OrderedDict
 
 from src.devices_parser import DevicesParser
@@ -13,11 +21,6 @@ class SampleArgs:
     rf_gpio_pin = 17
 
 class TestDevicesParser():
-
-    @pytest.fixture(scope = 'session', autouse = True)
-    def setGPIOPinLayout(self):
-        GPIO.setmode(GPIO.BCM)
-
     @pytest.fixture(scope = 'session')
     def devicesParser(self):
         return DevicesParser()
@@ -29,9 +32,10 @@ class TestDevicesParser():
             'PowerPlug1': PowerPlug(
                 [123], [456],
                 name='PowerPlug1',
+                friendlyName='Test PowerPlug 1',
                 protocol=1,
                 pulselength=234),
-            'GPIODevice1': GPIODevice('GPIODevice1', 2)
+            'GPIODevice1': GPIODevice('GPIODevice1', 2, friendlyName='Test GPIO Device')
         }
 
         parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/everything.yaml')
@@ -63,7 +67,7 @@ class TestDevicesParser():
         print('It should at least parse all GPIODevices, even if the PowerPlugs format is wrong')
 
         expectedResult = {
-            'GPIODevice1': GPIODevice('GPIODevice1', 2)
+            'GPIODevice1': GPIODevice('GPIODevice1', '', 2)
         }
 
         parsedDevices = devicesParser.parseDevicesFile(SampleArgs(), devicesFilePath='test/devices_parser_tests/fixtures/faulty_powerplugs.yaml')
