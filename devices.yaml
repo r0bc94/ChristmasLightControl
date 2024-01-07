@@ -1,5 +1,6 @@
 fiberglaslampe:
   type: "PowerPlug"
+  friendlyName: "Fieberglas Lampe"
   codes:
     - 5825904 
     - 5888928
@@ -7,6 +8,7 @@ fiberglaslampe:
   protocol: 5
 
 blauelampe:
+  friendlyName: "Blaue Lampe"
   type: "PowerPlug"
   codes:
     - 5825908 
@@ -15,6 +17,7 @@ blauelampe:
   protocol: 5
 
 grauelampe:
+  friendlyName: "Graue Lampe"
   type: "PowerPlug"
   codes:
     - 5825916

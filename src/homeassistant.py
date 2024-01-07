@@ -19,7 +19,7 @@ def expose_devices(devices_dict: dict, mqttclient: Client, **expose_args):
             continue
 
         # Serialize and Publish Switch Data for HomeAssistant
-        hadict = create_ha_dict(key, expose_args['root_topic'])
+        hadict = create_ha_dict(key, val, expose_args['root_topic'])
         hadict_serialized = json.dumps(hadict)
 
         ha_device_config_topic = f'{expose_args["discovery_topic"]}/switch/{key}/config'
@@ -29,13 +29,13 @@ def expose_devices(devices_dict: dict, mqttclient: Client, **expose_args):
         mqttclient.publish(ha_device_config_topic, hadict_serialized)
 
 
-def create_ha_dict(devname: str, roottopic: str):
+def create_ha_dict(devname: str, devobject: PowerPlug, roottopic: str):
     command_topic = f'{roottopic}/{devname}' if roottopic != '#' else devname
     hadict = {
-        'name': devname,
+        'name': 'Switch',
         'unique_id': f'rfswitch_{devname}',
         'device': {
-            'name': f'rfswitch_{devname}',
+            'name': devobject.friendlyName,
             'identifiers': devname,
             'model': 'RFSwitch'
         },

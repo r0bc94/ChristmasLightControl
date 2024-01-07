@@ -78,6 +78,10 @@ def on_connect(client, userdata, flags, rc):
     logger.debug(f'Subscribing to root topic: {topic}')
     client.subscribe(topic)
 
+    if args.expose_to_homeassistant: 
+        logger.info('Exposing all PowerPlug Devices to Homeassistant')
+        expose_devices(devDict, client, root_topic=args.topic, discovery_topic=args.discovery_topic)
+
 def on_message(client, userdata, message):
     logger.debug('Received mqtt messaged from the broker')
     logger.debug('Topic: {}'.format(message.topic))
@@ -112,11 +116,6 @@ client.connect(args.host, port=args.port)
 
 try:
     logger.info('Waiting for mqtt messages...')
-
-    if args.expose_to_homeassistant: 
-        logger.info('Exposing all PowerPlug Devices to Homeassistant')
-        expose_devices(devDict, client, root_topic=args.topic, discovery_topic=args.discovery_topic)
-
     client.loop_forever()
 except KeyboardInterrupt:
     logger.info('exiting...')

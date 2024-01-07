@@ -6,7 +6,7 @@ from .lirc_service import runLircCommand
 
 
 class IRDevice(Device):
-    def __init__(self, name: str, powerKeyName='KEY_POWER', repeatCount=1, timeout=2):
+    def __init__(self, name: str, friendlyName: str = '', powerKeyName='KEY_POWER', repeatCount=1, timeout=2):
         self.__logger = logging.getLogger().getChild('IR Device')
 
         self.__logger.debug(f'Creating new IRDevice')
@@ -15,6 +15,7 @@ class IRDevice(Device):
         self.__logger.debug(f'timeout: {timeout}')
 
         self.__name = name
+        self.__friendlyName = friendlyName
         self.__repeatCount = repeatCount
         self.__timeout = timeout
 
