@@ -11,8 +11,8 @@ setting a designated GPIO pin.
 """
 
 class GPIODevice(Device):
-    def __init__(self, name: str, pin: int):
-        super().__init__(name)
+    def __init__(self, name: str, pin: int, friendlyName=''):
+        super().__init__(name, friendlyName=friendlyName)
         self.__logger = logging.getLogger().getChild('GPIO Device')
         self.__pin = pin
         

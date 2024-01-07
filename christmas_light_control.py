@@ -4,10 +4,18 @@ import logging
 import paho.mqtt.client as mqtt
 import configargparse
 
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO
+except (RuntimeError, ModuleNotFoundError):
+    print('Using Fake RPi GPIO Imports')
+    from fake_rpigpio import utils, RPi
+    import sys
+    utils.install()
+    sys.modules['RPi'] = RPi
 
 from src.devices_parser import DevicesParser
 from src.ir_device import IRDevice
+from src.homeassistant import expose_devices
 
 # Create the logger
 logger = logging.getLogger()
@@ -30,6 +38,10 @@ rfDeviceConfig = argParser.add_argument_group('RF Device')
 rfDeviceConfig.add_argument('--rf_gpio_pin', help='The pin where the RF - Transmitter is connected to', type=int, default=17)
 rfDeviceConfig.add_argument('-e', '--rf_enable_pin', help='If your Transmitter has an optional enable pin, this needs to be set', type=int, nargs=1)
 
+homeassistantConfig = argParser.add_argument_group('HomeAssistant', description='Arguments used to configure the connection to homeassistant')
+homeassistantConfig.add_argument('--expose_to_homeassistant', default=False, action='store_true', help='If set, all devices read from the devices.yaml file will be exposed to homeassistant via the configured MQTT broker.')
+homeassistantConfig.add_argument('--discovery_topic', type=str, default='homeassistant', help='Root Topic name for the homeassistant discovery. Set if it needs to be changed.')
+
 # Parse the command line arguments
 args = argParser.parse_args()
 if not args.debug:
@@ -49,15 +61,15 @@ except Exception as ex:
     logger.exception(ex)
     exit(1)
 
-# Initialize the GPIO pins
-GPIO.setmode(GPIO.BCM)
+# Initialize the RPi.GPIO pins
+RPi.GPIO.setmode(RPi.GPIO.BCM)
 
 if args.rf_enable_pin:
     pin = args.rf_enable_pin[0]
     logger.info(f'Enable Pin for the RF - Devices was set to pin {pin}')
     logger.debug(f'Setting pin {pin} as OUTPUT')
-    GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, GPIO.LOW)
+    RPi.GPIO.setup(pin, RPi.GPIO.OUT)
+    RPi.GPIO.output(pin, RPi.GPIO.LOW)
 
 def on_connect(client, userdata, flags, rc):
     logger.info('Sucessfully connected to the mqtt broker')
@@ -65,6 +77,10 @@ def on_connect(client, userdata, flags, rc):
 
     logger.debug(f'Subscribing to root topic: {topic}')
     client.subscribe(topic)
+
+    if args.expose_to_homeassistant: 
+        logger.info('Exposing all PowerPlug Devices to Homeassistant')
+        expose_devices(devDict, client, root_topic=args.topic, discovery_topic=args.discovery_topic)
 
 def on_message(client, userdata, message):
     logger.debug('Received mqtt messaged from the broker')
@@ -107,7 +123,5 @@ except Exception as ex:
     logger.error('An unexpected error occured: {}'.format(ex))
     logger.exception(ex)
 finally:
-    logger.debug('Cleaning up GPIO Channels')
-    
-    # TODO: I need some sort of cleanup function in the device classes.
-    GPIO.cleanup()
+    logger.debug('Cleaning up RPi.GPIO Channels')
+    RPi.GPIO.cleanup()

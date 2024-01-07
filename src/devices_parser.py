@@ -31,14 +31,13 @@ class DevicesParser():
             self.__logger.exception('Error while trying to open the devices file: {}'.format(ioErr))
             raise
 
-        parsedDevicesuration = None
+        devicesYaml = None
         try:
-            parsedDevicesuration = yaml.load(fileContent, Loader=yaml.CLoader)
-            print(parsedDevicesuration)
+            devicesYaml = yaml.load(fileContent, Loader=yaml.CLoader)
         except yaml.ScannerError as err:
             self.__logger.error('Failed to read the devices file: {}'.format(err))
             raise
-        return self.__parseTypes(parsedDevicesuration, args)
+        return self.__parseTypes(devicesYaml, args)
 
     def __parseTypes(self, parsedDevicesFile, args):
         """
@@ -50,21 +49,22 @@ class DevicesParser():
         for curDevName, curDev in parsedDevicesFile.items():
             try:
                 devType = curDev['type']
+                friendlyName = curDev.get('friendlyName', curDevName)
 
                 if devType == 'PowerPlug':
-                    parsedPlug = self.__parsePowerPlug(curDev, curDevName, args)
+                    parsedPlug = self.__parsePowerPlug(curDev, curDevName, friendlyName, args)
 
                     if parsedPlug is not None:
                         outDict[curDevName] = parsedPlug
                 
                 elif devType == 'GPIODevice':
-                    parsedGpioDev = self.__parseGpioDevice(curDev, curDevName)
+                    parsedGpioDev = self.__parseGpioDevice(curDev, curDevName, friendlyName)
 
                     if parsedGpioDev is not None:
                         outDict[curDevName] = parsedGpioDev
 
                 elif devType == 'IRDevice':
-                    parsedIrDev = self.__parseIrDevice(curDev, curDevName)
+                    parsedIrDev = self.__parseIrDevice(curDev, curDevName, friendlyName)
 
                     if parsedIrDev is not None:
                         outDict[curDevName] = parsedIrDev
@@ -80,7 +80,7 @@ class DevicesParser():
 
         return outDict
 
-    def __parsePowerPlug(self, powerPlugRaw, devName, args):
+    def __parsePowerPlug(self, powerPlugRaw, devName, friendlyName, args):
         """
         Returns the PowerPlug object parsed from the passed object model.
         """
@@ -108,6 +108,7 @@ class DevicesParser():
             if args.rf_enable_pin:
                 outPlug = PowerPlug(onCodes, offCodes,\
                     name=devName,\
+                    friendlyName=friendlyName,\
                     senderGpioPin=args.rf_gpio_pin,\
                     pulselength=pulselength,\
                     protocol=protocol,\
@@ -126,7 +127,7 @@ class DevicesParser():
     
         return outPlug
 
-    def __parseGpioDevice(self, gpioDeviceRaw, devName):
+    def __parseGpioDevice(self, gpioDeviceRaw, devName, friendlyName):
         """
         Returns the GPIO object parsed from the passed object model.
         """
@@ -134,14 +135,14 @@ class DevicesParser():
         try:
             pin = gpioDeviceRaw['pin']
 
-            outGpioDevice = GPIODevice(devName, pin)
+            outGpioDevice = GPIODevice(devName, pin, friendlyName)
         
         except KeyError as kerr:
             self.__logger.warning('Missing Property {}, skipping PowerPlug'.format(kerr))
 
         return outGpioDevice
 
-    def __parseIrDevice(self, irDeviceRaw, devName):
+    def __parseIrDevice(self, irDeviceRaw, devName, friendlyName):
         """
         Returns the parsed IR Device
         """
@@ -164,4 +165,4 @@ class DevicesParser():
 
                 kwargs[k] = int(v)
 
-        return IRDevice(devName, **kwargs)
+        return IRDevice(devName, friendlyName=friendlyName, **kwargs)

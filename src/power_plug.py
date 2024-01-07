@@ -12,8 +12,8 @@ Represents a PowerPlug with all the associated attributes.
 """
 
 class PowerPlug(Device):
-    def __init__(self, onCodes, offCodes, name='', pulselength=0, protocol=0, senderGpioPin=17, sendRepeat=20, setEnable=False, enablePin=0):
-        super().__init__(name)
+    def __init__(self, onCodes, offCodes, name='', friendlyName='', pulselength=0, protocol=0, senderGpioPin=17, sendRepeat=20, setEnable=False, enablePin=0):
+        super().__init__(name, friendlyName)
         
         self.__logger = logging.getLogger().getChild('Power Plug')
 
